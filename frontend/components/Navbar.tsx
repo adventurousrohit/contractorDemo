@@ -2,9 +2,8 @@
 
 import * as React from "react";
 import Link from "next/link";
-
 import { removeCookieWithKey, getCookieWithKey } from "../app/utils/cookie";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -16,11 +15,12 @@ import { Button } from "./ui/button";
 
 export function NavBar() {
   const router = useRouter();
-  const [user, setUser] = React.useState<any>();
-  const token = getCookieWithKey("token");
+  const pathname = usePathname()
+  const [user, setUser] = React.useState<any>(null);
 
   React.useEffect(() => {
     try {
+      const token = getCookieWithKey("token");
       if (typeof window !== "undefined") {
         const user = getCookieWithKey("user");
         if (user) {
@@ -28,25 +28,24 @@ export function NavBar() {
           console.log("userData", userData);
           setUser(userData);
         }
-        if (!token) return;
       }
     } catch (error) {
-      console.error("Error saving to localStorage:", error);
+      console.error("Error loading user data:", error);
     }
-  }, []);
+    
+  }, [pathname]);
+
   const signout = () => {
     removeCookieWithKey("token");
     removeCookieWithKey("user");
+    setUser(null); 
     router.push("/login");
   };
 
+  if (!user) return null;
+
   return (
-    <div
-      className="relative flex left-[40%] m-[22px] px-[22px]"
-      onClick={() => {
-        console.log("users", user);
-      }}
-    >
+    <div className="relative flex left-[40%] m-[22px] px-[22px]">
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
@@ -56,9 +55,7 @@ export function NavBar() {
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
-          {user?.roles?.find((item: any) =>
-            item.name.toLowerCase().includes("user")
-          ) && (
+          {user?.roles?.some((obj: any) => obj.name?.toLowerCase() === 'user') && (
             <NavigationMenuItem className={navigationMenuTriggerStyle()}>
               <Link href="/uploadFile" legacyBehavior passHref>
                 <NavigationMenuLink className={navigationMenuTriggerStyle()}>
@@ -67,10 +64,9 @@ export function NavBar() {
               </Link>
             </NavigationMenuItem>
           )}
-
           <NavigationMenuItem>
             <Button onClick={signout}>
-                  Log out
+              Log out
             </Button>
           </NavigationMenuItem>
         </NavigationMenuList>

@@ -1,16 +1,22 @@
 "use client";
 import React from "react";
-import { getContract, deleteContract, approveOrReject } from "../utils/api";
+import {
+  getContract,
+  deleteContract,
+  approveOrReject,
+  getAllUser,
+} from "../utils/api";
 import { getCookieWithKey } from "../utils/cookie";
 import TableWithPagination from "@/components/Table";
 
 // import { Button, Input, Container, Card, CardHeader, CardBody, CardFooter } from '@comp';
 
 const contract = () => {
-  const [page, setpage] = React.useState(0);
+  const [pageinationData, setPaginationData] = React.useState();
   const [pageSize, setpageSize] = React.useState(10);
   const [totalRecord, setTotalRecord] = React.useState(null);
   const [data, setData] = React.useState([]);
+  const [allUser, setAllUser] = React.useState([]);
   const [isAdmin, setIsAdmin] = React.useState(false);
 
   React.useEffect(() => {
@@ -18,27 +24,52 @@ const contract = () => {
     if (user) {
       const userData = JSON.parse(user);
       console.log("userData", userData?.roles);
-      const isAdmin = userData?.roles?.find((item: any) =>
-        item.name.toLowerCase().includes("admin")
-      );
-      setIsAdmin(isAdmin)
+      const isAdmin = userData?.roles?.some((obj: any) => obj.name === "Admin");
+      if (isAdmin) {
+        setIsAdmin(isAdmin);
+        getAllUsers().then((data) => {
+          const userId = data?.[0]?.id;
+          getContractHandler(0, 10, "", userId);
+        });
+      }else {
+        getContractHandler(0, 10);
+      }
+      console.log("isAdmin", isAdmin);
+    } 
+  }, []);
+  const getAllUsers = async () => {
+    const resp = await getAllUser();
+    if (resp) {
+     const dataList = resp?.map((data:any)=>{
+      const a ={name:data?.name, value:data?.id}
+      return a
+      })
+      setAllUser(dataList);
+      return resp;
     }
-    getContractHandler(0,10);
-  }, [page]);
+  };
 
-  const getContractHandler = async (page?:number, pageSize?:number, status?:string) => {
+  const getContractHandler = async (
+    page?: number,
+    pageSize?: number,
+    status?: string,
+    userId?: number
+  ) => {
     try {
-      const data = { page: page, pageSize: pageSize, status:status };
+      const data = {
+        page: page,
+        pageSize: pageSize,
+        status: status,
+        userId: userId,
+      };
+      console.log("checkingData", data)
       const resp = await getContract(data);
       if (resp) {
-        console.log("resp", resp);
         const { contracts, pagination } = resp;
         setData(contracts);
-        setpage(pagination?.currentPage);
-        setpageSize(pagination?.pageSize);
-        setTotalRecord(pagination?.totalContracts);
-        // setCookieWithKey(access_token, 'token')
-        // setCookieWithKey(user, 'user')
+        setPaginationData(pagination);
+        // setpageSize(pagination?.pageSize);
+        // setTotalRecord(pagination?.totalContracts);
       }
     } catch (e) {
       console.log("Error from login page", e);
@@ -60,21 +91,24 @@ const contract = () => {
     }
   };
 
+  // 2. Delete handler function
+  const handleApproveOrReject = async (
+    contractId: number,
+    isApproved: Boolean,
+    userId?: number
+  ) => {
+    try {
+      const response = await approveOrReject(contractId, isApproved);
 
-    // 2. Delete handler function
-    const handleApproveOrReject = async (contractId: number, isApproved:Boolean) => {
-      try {
-        const response = await approveOrReject(contractId, isApproved);
-  
-        if (response?.status === 200) {
-          alert("Contract Updated successfully");
-          getContractHandler();
-        }
-      } catch (error) {
-        console.error("Error deleting contract", error);
-        alert("Error deleting contract");
+      if (response?.status === 200) {
+        alert("Contract Updated successfully");
+        getContractHandler();
       }
-    };
+    } catch (error) {
+      console.error("Error deleting contract", error);
+      alert("Error deleting contract");
+    }
+  };
 
   return (
     <>
@@ -85,7 +119,9 @@ const contract = () => {
           handleDelete={handleDelete}
           isAdmin={isAdmin}
           handleApprove={handleApproveOrReject}
-          getContractHandler= {getContractHandler}
+          getContractHandler={getContractHandler}
+          allUser ={allUser}
+          pagination = {pageinationData}
         />
       </div>
     </>

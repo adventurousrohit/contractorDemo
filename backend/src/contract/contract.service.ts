@@ -112,6 +112,24 @@ export class ContractService {
     }
   }
 
+  async getAllUsers() {
+    try {
+      const usersWithUserRole = await this.prisma.user.findMany({
+        where: {
+          roles: {
+            some: {
+              name: 'User',
+            },
+          },
+        },
+      });
+  
+      return usersWithUserRole
+    } catch (error) {
+      throw new Error(`Failed to fetch contracts for user `);
+    }
+  }
+
   async deleteContract(user: any, contractId: number) {
     try {
       const contract = await this.prisma.contract.findUnique({

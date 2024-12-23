@@ -117,13 +117,18 @@ export class ContractController {
   ) {
     page = isNaN(page) || page <= 0 ? 1 : page;
     pageSize = isNaN(pageSize) || pageSize <= 0 ? 10 : pageSize;
-    const id = isNaN(userId) ?req?.user?.id : userId;
-    return this.contractorService.getUserContracts(
-      id,
-      status,
-      page,
-      pageSize,
-    );
+    const id = isNaN(userId) ? req?.user?.id : userId;
+    return this.contractorService.getUserContracts(id, status, page, pageSize);
+  }
+
+  // Route to handle the file upload and process the buffer
+  @Get('get/all/user')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Unauthorized.' })
+  @Roles(Role.Admin)
+  async getUser(@Request() req: any) {
+    return this.contractorService.getAllUsers();
   }
 
   @Delete('delete/contract/:contractId')
@@ -140,8 +145,8 @@ export class ContractController {
     @Request() req: any,
     @Param('contractId') contractId: number,
   ) {
-    const user = req.user
-    return this.contractorService.deleteContract(user, contractId)
+    const user = req.user;
+    return this.contractorService.deleteContract(user, contractId);
   }
 
   @Put('update/status/:contractId')
@@ -166,6 +171,6 @@ export class ContractController {
     @Query('isApproved') isApproved: Boolean,
   ) {
     // const user = req.user
-    return this.contractorService.approveContract(contractId, isApproved)
+    return this.contractorService.approveContract(contractId, isApproved);
   }
 }

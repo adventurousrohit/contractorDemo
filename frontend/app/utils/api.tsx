@@ -13,9 +13,23 @@ export const login = async (username:string, password:string) => {
       return
     }
     return response.data;
-  } catch (error) {
-    console.error("Error during login:", error);
-    // throw error;
+  } catch (error:any) {
+    if (error.response) {
+      if (error.response.status === 404) {
+        console.error('Error: Endpoint not found');
+      } else if (error.response.status === 500) {
+        console.error('Internal Server Error: Something went wrong.');
+      } else {
+        console.error(`HTTP Error ${error.response.status}: ${error.response.data}`);
+      }
+    } else if (error.request) {
+      console.error('No response from server');
+    } else {
+      console.error('Error setting up request:', error.message);
+    }
+
+    // You can throw an error to propagate it further if needed
+    throw error;
   }
 };
 
@@ -23,17 +37,42 @@ export const getContract = async (data?:any) => {
   try {
     let url = `/api/contract/get/contract`
      const token = getCookieWithKey('token')
-
+     
+     console.log("afl;ncsz", data)
+     if (data?.page ==0 || data?.page ) {
+      url += "?page=" + encodeURIComponent(data.page);
+    }
+    if (data?.pageSize) {
+      url += (data?.page ? "&" : "?") + "pageSize=" + encodeURIComponent(data.pageSize);
+    }
     if (data?.status) {
-      url += "?status=" + encodeURIComponent(data.status); // Add `status` as a query parameter
+      url += (data?.page ==0 || data?.page  || data?.pageSize ? "&" : "?") + "status=" + encodeURIComponent(data.status); // Add `status` as a query parameter
     }
-    if (data?.id) {
-      url += (data?.status ? "&" : "?") + "id=" + encodeURIComponent(data.id);
+
+    if (data?.userId) {
+      url += (data?.status || data?.pageSize || data?.page ==0 || data?.page  ? "&" : "?") + "userId=" + encodeURIComponent(data.userId);
     }
-    
-    if (data?.page) {
-      url += (data?.status || data?.id ? "&" : "?") + "page=" + encodeURIComponent(data.page);
-    }
+    const response = await axios.get(url, {
+      headers: {
+        'Authorization': `Bearer ${JSON.parse(token)}`, 
+        'Content-Type': 'application/json', 
+      }});
+      if(response?.status ==401){
+        redirectTologin()
+        return
+      }
+    return response.data;
+  } catch (error) {
+    console.error("Error during login:", error);
+    // throw error;
+  }
+};
+
+export const getAllUser = async (data?:any) => {
+  try {
+    const token = getCookieWithKey('token')
+    let url = `/api/contract/get/all/user`
+
     const response = await axios.get(url, {
       headers: {
         'Authorization': `Bearer ${JSON.parse(token)}`, 
