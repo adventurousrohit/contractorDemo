@@ -3,19 +3,13 @@ import { useState } from 'react';
 import {
     Card,
     CardContent,
-    CardDescription,
-    CardFooter,
     CardHeader,
-    CardTitle,
   } from "@/components/ui/card"
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
+
 
 // import { Button, Input, Container, Card, CardHeader, CardBody, CardFooter } from '@comp';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
 
   return (
     <div className="min-h-screen flex items-center justify-center">

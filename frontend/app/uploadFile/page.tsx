@@ -5,13 +5,13 @@ import {getCookieWithKey}  from '../utils/cookie'
 
 
 const FileUploadComponent = () => {
-  const [file, setFile] = React.useState(null);
+  const [file, setFile] = React.useState<File | null>(null);
   const [error, setError] = React.useState('');
   const [message, setMessage] = React.useState('');
 
   // Handle file selection
-  const handleFileChange = (e:any) => {
-    const selectedFile = e.target.files[0];
+  const handleFileChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files ? e.target.files[0] : null;
 
     // Validate file type
     if (selectedFile && (selectedFile.type === 'application/json' || selectedFile.name.endsWith('.txt') || selectedFile.name.endsWith('.csv'))) {
@@ -45,7 +45,8 @@ const FileUploadComponent = () => {
       setMessage(response.data.message); 
       setError('');
     } catch (err) {
-      setError('Failed to upload file. Please try again.');
+      console.error(err)
+      setError('Failed to upload file. Please try again.', );
       setMessage('');
     }
   };

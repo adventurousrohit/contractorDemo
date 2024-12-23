@@ -10,48 +10,20 @@ interface Contract {
 
 interface ContractListProps {
   data: Contract[];
-  isAdmin: Boolean;
-  handleDelete: Function;
-  handleApprove: Function;
+  isAdmin: boolean;
+  handleDelete:  (contractId: number) => void;
+  handleApprove:  (contractId: number, isApprove:boolean) => void;
+  getContractHandler:  (page?: number,pageSize?: number, status?:string) => void;
 }
 
 const TableWithPagination: React.FC<ContractListProps> = ({
   data,
   handleDelete,
   isAdmin,
-  handleApprove
+  handleApprove,
+  getContractHandler
 }) => {
-  // Sample data (replace with actual data)
-  // const data = [
-  //   {
-  //     "title": "contrac1",
-  //     "contractorName": "John Doe",
-  //     "startDate": "2024-01-15",
-  //     "endDate": "2024-12-31"
-  //   },
-  //   {
-  //     "title": "contrac2t2",
-  //     "contractorName": "Jane Smith",
-  //     "startDate": "2024-02-01",
-  //     "endDate": null
-  //   },
-  //   {
-  //     "title": "contrac2t3",
-  //     "contractorName": "Alice Johnson",
-  //     "startDate": "2023-11-10",
-  //     "endDate": "2024-06-30"
-  //   },
-  //   {
-  //     "contractorName": "Bob Brown",
-  //     "startDate": "2024-03-05",
-  //     "endDate": null
-  //   },
-  //   {
-  //     "contractorName": "Charlie Davis",
-  //     "startDate": "2024-04-12",
-  //     "endDate": "2024-08-31"
-  //   }
-  // ];
+;
 
   const option = [
     {
@@ -166,7 +138,7 @@ const TableWithPagination: React.FC<ContractListProps> = ({
       <div className="mt-4 flex justify-center space-x-2">
         <button
           className="p-2 bg-gray-300 rounded-lg hover:bg-gray-400"
-          onClick={() => paginate(currentPage > 1 ? currentPage - 1 : 1)}
+          onClick={() => getContractHandler(currentPage > 1 ? currentPage - 1 : 1)}
         >
           Previous
         </button>

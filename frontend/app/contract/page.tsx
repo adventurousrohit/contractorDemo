@@ -1,20 +1,8 @@
 "use client";
-import React, { useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import React from "react";
 import { getContract, deleteContract, approveOrReject } from "../utils/api";
 import { getCookieWithKey } from "../utils/cookie";
 import TableWithPagination from "@/components/Table";
-import { DropdownMenuCheckboxes } from "@/components/DropDown";
 
 // import { Button, Input, Container, Card, CardHeader, CardBody, CardFooter } from '@comp';
 
@@ -35,12 +23,12 @@ const contract = () => {
       );
       setIsAdmin(isAdmin)
     }
-    getContractHandler();
+    getContractHandler(0,10);
   }, [page]);
 
-  const getContractHandler = async () => {
+  const getContractHandler = async (page?:number, pageSize?:number, status?:string) => {
     try {
-      const data = { page: page, pageSize: pageSize };
+      const data = { page: page, pageSize: pageSize, status:status };
       const resp = await getContract(data);
       if (resp) {
         console.log("resp", resp);
@@ -97,6 +85,7 @@ const contract = () => {
           handleDelete={handleDelete}
           isAdmin={isAdmin}
           handleApprove={handleApproveOrReject}
+          getContractHandler= {getContractHandler}
         />
       </div>
     </>
