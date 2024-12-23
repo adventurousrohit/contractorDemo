@@ -62,7 +62,7 @@ const contract = () => {
     try {
       const response = await deleteContract(id);
 
-      if (response.status === 200) {
+      if (response?.status === 200) {
         alert("Contract deleted successfully");
         getContractHandler();
       }
@@ -78,7 +78,7 @@ const contract = () => {
       try {
         const response = await approveOrReject(contractId, isApproved);
   
-        if (response.status === 200) {
+        if (response?.status === 200) {
           alert("Contract Updated successfully");
           getContractHandler();
         }
