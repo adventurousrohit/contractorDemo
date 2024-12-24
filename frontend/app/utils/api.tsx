@@ -2,10 +2,10 @@
 import axios from "axios";
 import {getCookieWithKey, removeCookieWithKey}  from '../utils/cookie'
 
-export const login = async (username:string, password:string) => {
+export const login = async (email:string, password:string) => {
   // try {
     const response = await axios.post(`/api/auth/login`, {
-      email:username,
+      email:email,
       password:password,
     });
     return response;

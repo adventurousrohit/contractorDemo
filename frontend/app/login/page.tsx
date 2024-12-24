@@ -19,7 +19,7 @@ import {getCookieWithKey}  from '../utils/cookie'
 // import { Button, Input, Container, Card, CardHeader, CardBody, CardFooter } from '@comp';
 
 const LoginPage = () => {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] =  React.useState('')
   const router = useRouter()
@@ -36,7 +36,7 @@ const LoginPage = () => {
   const handleLogin = async(e:any) => {
     e.preventDefault();
     try{
-      const resp = await login(username, password)
+      const resp = await login(email, password)
       if(resp.status !=200){
         setError('invalid Credentials')
       }
@@ -69,9 +69,9 @@ const LoginPage = () => {
             <div>
               <label className="block text-sm font-medium">Email</label>
               <Input
-                type="text"
-                value={username}
-                onChange={(e:any) => setUsername(e.target.value)}
+                type="email"
+                value={email}
+                onChange={(e:any) => setEmail(e.target.value)}
                 required
                 className="mt-1 block w-full"
               />
