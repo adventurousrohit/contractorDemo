@@ -3,34 +3,12 @@ import axios from "axios";
 import {getCookieWithKey, removeCookieWithKey}  from '../utils/cookie'
 
 export const login = async (username:string, password:string) => {
-  try {
+  // try {
     const response = await axios.post(`/api/auth/login`, {
       email:username,
       password:password,
     });
-    if(response?.status ==401){
-      redirectTologin()
-      return
-    }
-    return response.data;
-  } catch (error:any) {
-    if (error.response) {
-      if (error.response.status === 404) {
-        console.error('Error: Endpoint not found');
-      } else if (error.response.status === 500) {
-        console.error('Internal Server Error: Something went wrong.');
-      } else {
-        console.error(`HTTP Error ${error.response.status}: ${error.response.data}`);
-      }
-    } else if (error.request) {
-      console.error('No response from server');
-    } else {
-      console.error('Error setting up request:', error.message);
-    }
-
-    // You can throw an error to propagate it further if needed
-    throw error;
-  }
+    return response;
 };
 
 export const getContract = async (data?:any) => {
@@ -113,7 +91,7 @@ export const deleteContract = async (contractId:number) => {
 export const approveOrReject = async (contractId:number, isApproved:Boolean) => {
   try {
     const token = getCookieWithKey('token')
-    const response = await axios.put(`/api/contract/delete/contract/${contractId}?isApproved=${isApproved}`, {
+    const response = await axios.put(`/api/contract/update/status/${contractId}?isApproved=${isApproved}`,{}, {
       headers: {
         'Authorization': `Bearer ${JSON.parse(token)}`, 
         'Content-Type': 'application/json', 

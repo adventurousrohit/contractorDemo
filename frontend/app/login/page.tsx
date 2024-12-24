@@ -21,7 +21,7 @@ import {getCookieWithKey}  from '../utils/cookie'
 const LoginPage = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-
+  const [error, setError] =  React.useState('')
   const router = useRouter()
 
 
@@ -37,20 +37,25 @@ const LoginPage = () => {
     e.preventDefault();
     try{
       const resp = await login(username, password)
-      if(resp){
+      if(resp.status !=200){
+        setError('invalid Credentials')
+      }
+      if(resp?.data){
+        setError('')
         console.log('resp',resp)
-        const {access_token, user} = resp
+        const {access_token, user} = resp?.data
         setCookieWithKey(JSON.stringify(access_token), 'token')
         setCookieWithKey(JSON.stringify(user), 'user')
         router.push('/contract')
         
       }
-    }catch(e){
+    }catch(e:any){
+      if(e?.status !=200){
+        setError('invalid Credentials')
+      }
       console.log("Error from login page", e)
     }
-    // Handle login logic here
-    console.log('Username:', username);
-    console.log('Password:', password);
+
   };
 
   return (
@@ -80,10 +85,12 @@ const LoginPage = () => {
                 required
                 className="mt-1 block w-full"
               />
+              {error && <p className="text-sm text-red-500 mt-1">{error}</p>}
             </div>
             <Button type="submit" className="w-full">Login</Button>
           </form>
         </CardContent>
+
         <CardFooter>
           <p className="text-sm text-center">
             Don't have an account? <Link href="/register" className="text-blue-500">Register</Link>

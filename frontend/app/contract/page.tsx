@@ -16,7 +16,7 @@ const contract = () => {
   const [pageSize, setpageSize] = React.useState(10);
   const [totalRecord, setTotalRecord] = React.useState(null);
   const [data, setData] = React.useState([]);
-  const [allUser, setAllUser] = React.useState([]);
+  const [allUser, setAllUser] = React.useState<any>([]);
   const [isAdmin, setIsAdmin] = React.useState(false);
 
   React.useEffect(() => {
@@ -83,7 +83,8 @@ const contract = () => {
 
       if (response?.status === 200) {
         alert("Contract deleted successfully");
-        getContractHandler();
+        const userId = isAdmin && allUser?.[0]?.value
+        getContractHandler(0,10,"", userId);
       }
     } catch (error) {
       console.error("Error deleting contract", error);
@@ -102,7 +103,8 @@ const contract = () => {
 
       if (response?.status === 200) {
         alert("Contract Updated successfully");
-        getContractHandler();
+        const userId = isAdmin && allUser?.[0]?.value
+        getContractHandler(0,10,"", userId);
       }
     } catch (error) {
       console.error("Error deleting contract", error);
